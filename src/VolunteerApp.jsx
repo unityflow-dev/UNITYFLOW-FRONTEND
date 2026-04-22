@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 
-const API = "https://unityflow-backend-71bj.onrender.com/api";
+const API = "https://unityflow-backend.onrender.com/api";
 const SECTOR_ICONS = { "Flood Relief":"🌊", Healthcare:"🏥", "Women Safety":"🛡️", "Food & Hunger":"🍱", "Food and Hunger":"🍱", Education:"📚" };
 const URGENCY_LABEL = ["","MINIMAL","LOW","MEDIUM","HIGH","CRITICAL"];
 const URGENCY_COLOR = ["","#64748b","#3b82f6","#f59e0b","#f97316","#ef4444"];
@@ -138,7 +138,7 @@ export default function VolunteerApp() {
     try {
       const res = await fetch(`${API}/tasks`);
       const data = await res.json();
-      setTasks(data.tasks || data);
+      setTasks(data);
     } catch (e) { console.error(e); }
   }, []);
 
@@ -174,18 +174,18 @@ export default function VolunteerApp() {
 
   const incomingTasks = tasks.filter(t => t.status === "open");
   const activeTasks = tasks.filter(t =>
-    t.status === "assigned" && (t?.assignedVolunteer?._id === selectedVolunteer?._id)
+    t.status === "assigned" && t.assigned_volunteer_id === selectedVolunteer?._id
   );
   const historyTasks = tasks.filter(t =>
-    t.status === "completed" && (t?.assignedVolunteer?._id === selectedVolunteer?._id)
+    t.status === "completed" && t.assigned_volunteer_id === selectedVolunteer?._id
   );
 
   const handleAccept = async (task) => {
     try {
-      const res = await fetch(`${API}/tasks/${task._id}/assign`, {
+      const res = await fetch(`${API}/assign`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ volunteerId: selectedVolunteer._id })
+        body: JSON.stringify({ task_id: task._id, volunteer_id: selectedVolunteer._id })
       });
       if (res.ok) {
         showToast(`✅ Task accepted!`);
