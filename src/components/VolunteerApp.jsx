@@ -174,10 +174,10 @@ export default function VolunteerApp() {
 
   const incomingTasks = tasks.filter(t => t.status === "open");
   const activeTasks = tasks.filter(t =>
-    t.status === "assigned" && (t?.assigned_volunteer_id === selectedVolunteer?._id)
+    t.status === "assigned" && (t?.assignedVolunteer?._id === selectedVolunteer?._id)
   );
   const historyTasks = tasks.filter(t =>
-    t.status === "completed" && (t?.assigned_volunteer_id === selectedVolunteer?._id)
+    t.status === "completed" && (t?.assignedVolunteer?._id === selectedVolunteer?._id)
   );
 
   const handleAccept = async (task) => {
