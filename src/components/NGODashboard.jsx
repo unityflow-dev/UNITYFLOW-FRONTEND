@@ -30,8 +30,8 @@ function LeafletMap({ tasks, selectedTask, onTaskClick }) {
         html:`<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:${isSelected?"3px solid #38bdf8":"2px solid rgba(255,255,255,0.4)"};box-shadow:0 0 ${isSelected?16:8}px ${color}88;"></div>`,
         iconSize:[size,size], iconAnchor:[size/2,size/2],
       });
-      const lat = task.latitude ?? 12.9716;
-      const lng = task.longitude ?? 77.5946;
+      const lat = task?.location?.lat ?? 12.9716;
+      const lng = task?.location?.lng ?? 77.5946;
       if (markersRef.current[task._id]) {
         markersRef.current[task._id].setIcon(icon);
         markersRef.current[task._id].setLatLng([lat,lng]);
@@ -203,7 +203,7 @@ export default function NGODashboard() {
                 </div>
                 <div style={{fontSize:11,color:"#94a3b8",marginBottom:6,lineHeight:1.4}}>{task.description?.slice(0,60)}{task.description?.length>60?"…":""}</div>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                  <span style={{fontSize:10,color:"#475569"}}>📍 {task.latitude?.toFixed(4)}, {task.longitude?.toFixed(4)}</span>
+                  <span style={{fontSize:10,color:"#475569"}}>📍 {task?.location?.lat?.toFixed(4)}, {task?.location?.lng?.toFixed(4)}</span>
                   <span style={{fontSize:10,color:STATUS_COLOR[task.status]||"#64748b",letterSpacing:1}}>● {task.status?.toUpperCase()}</span>
                 </div>
                 {isSelected && task.status==="open" && (
