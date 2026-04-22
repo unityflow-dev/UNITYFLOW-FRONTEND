@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>UnityFlow — Volunteer</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --green:#25D366;--green-dark:#128C7E;--green-light:#DCF8C6;
+  --bg:#ECE5DD;--white:#FFFFFF;--gray:#F0F0F0;--text:#111;--muted:#667781;
+  --red:#FF3B30;--orange:#FF9500;--blue:#007AFF;
+  --teal:#00BCD4;
+}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);min-height:100vh;max-width:430px;margin:0 auto;overflow-x:hidden}
+.screen{display:none;min-height:100vh;flex-direction:column;background:var(--white)}
+.screen.active{display:flex}
+
+/* STATUS BAR */
+.status-bar{background:var(--green-dark);color:white;padding:12px 20px 8px;display:flex;justify-content:space-between;align-items:center}
+.status-time{font-size:15px;font-weight:700}
+.status-right{font-size:12px;font-weight:600}
+
+/* TOP BAR */
+.top-bar{background:var(--green-dark);color:white;padding:10px 16px 12px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.top-bar .avatar{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;font-family:monospace}
+.top-bar-text h1{font-size:16px;font-weight:700;line-height:1.1}
+.top-bar-text p{font-size:11px;opacity:0.8;margin-top:1px}
+.back-btn{background:none;border:none;color:white;font-size:22px;cursor:pointer;padding:0;margin-right:4px}
+
+/* LOGIN SCREEN */
+.login-body{flex:1;background:var(--bg);display:flex;flex-direction:column;padding:24px 20px}
+.login-hero{text-align:center;padding:32px 0 24px}
+.login-icon{font-size:56px;margin-bottom:12px}
+.login-title{font-size:22px;font-weight:700;color:var(--text)}
+.login-sub{font-size:14px;color:var(--muted);margin-top:6px;line-height:1.5}
+.vol-card{background:var(--white);border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.vol-item{display:flex;align-items:center;gap:14px;padding:14px 16px;cursor:pointer;transition:background 0.15s;border-bottom:0.5px solid #f0f0f0}
+.vol-item:last-child{border-bottom:none}
+.vol-item:active{background:var(--gray)}
+.vol-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0}
+.vol-info{flex:1}
+.vol-name{font-size:15px;font-weight:600;color:var(--text)}
+.vol-skills{font-size:12px;color:var(--muted);margin-top:2px}
+.vol-badge{font-size:11px;padding:3px 8px;border-radius:10px;font-weight:600}
+.vol-badge.avail{background:var(--green-light);color:var(--green-dark)}
+.vol-badge.busy{background:#f0f0f0;color:var(--muted)}
+
+/* TAB BAR */
+.tab-bar{display:flex;border-bottom:0.5px solid #eee;background:var(--white);flex-shrink:0}
+.tab{flex:1;padding:12px 0 10px;text-align:center;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;gap:3px}
+.tab.active{color:var(--green-dark);border-bottom-color:var(--green-dark)}
+.tab-count{min-width:18px;height:18px;background:var(--red);color:white;border-radius:9px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.tab.active .tab-count{background:var(--green)}
+
+/* TASK LIST */
+.task-list{flex:1;overflow-y:auto;padding:12px 14px 80px;background:var(--bg)}
+
+/* TASK CARD */
+.task-card{background:var(--white);border-radius:16px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.08);animation:slideIn 0.2s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.card-sector{display:flex;align-items:center;gap:8px}
+.sector-icon{font-size:22px}
+.sector-name{font-size:14px;font-weight:700;color:var(--text)}
+.card-loc{font-size:11px;color:var(--muted);margin-top:2px}
+.urgency-pill{padding:4px 10px;border-radius:10px;font-size:11px;font-weight:700;white-space:nowrap}
+.card-desc{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px}
+.card-actions{display:flex;gap:8px}
+.btn-accept{flex:1;background:var(--green);color:white;border:none;border-radius:10px;padding:11px 0;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:background 0.2s}
+.btn-accept:active{background:var(--green-dark)}
+.btn-decline{flex:1;background:none;border:2px solid #eee;color:var(--muted);border-radius:10px;padding:10px 0;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer}
+.btn-complete{width:100%;background:var(--teal);color:white;border:none;border-radius:10px;padding:12px 0;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:background 0.2s}
+.btn-complete:active{background:#00897B}
+.done-tag{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--green-dark);font-weight:600;padding:4px 0}
+
+/* EMPTY STATE */
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center}
+.empty-icon{font-size:48px;margin-bottom:16px;opacity:0.4}
+.empty-text{font-size:15px;color:var(--muted)}
+
+/* TOAST */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:1000;white-space:nowrap;animation:toastIn 0.2s ease;max-width:90%}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--white);border-top:0.5px solid #eee;display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.nav-item{flex:1;padding:10px 0 12px;text-align:center;cursor:pointer;font-size:10px;font-weight:600;color:var(--muted)}
+.nav-item.active{color:var(--green-dark)}
+.nav-icon{font-size:22px;display:block;margin-bottom:2px}
+
+/* PROFILE SCREEN */
+.profile-body{flex:1;overflow-y:auto;padding:0 0 80px;background:var(--bg)}
+.profile-hero{background:var(--white);padding:24px 16px;text-align:center;margin-bottom:12px}
+.profile-av{width:72px;height:72px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:white}
+.profile-name{font-size:20px;font-weight:700;color:var(--text)}
+.profile-role{font-size:13px;color:var(--muted);margin-top:4px}
+.profile-stats{display:flex;justify-content:center;gap:32px;margin-top:20px;padding-top:16px;border-top:0.5px solid #f0f0f0}
+.stat-val{font-size:22px;font-weight:700;color:var(--text)}
+.stat-key{font-size:11px;color:var(--muted);margin-top:2px}
+.profile-section{background:var(--white);margin:0 0 12px;overflow:hidden}
+.profile-row{display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:0.5px solid #f0f0f0}
+.profile-row:last-child{border-bottom:none}
+.row-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.row-label{font-size:14px;font-weight:600;color:var(--text)}
+.row-val{font-size:13px;color:var(--muted);margin-top:1px}
+.logout-btn{margin:0 16px 16px;background:none;border:2px solid var(--red);color:var(--red);width:calc(100% - 32px);border-radius:12px;padding:13px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div class="screen active" id="screen-login">
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <span class="status-right">📶 🔋</span>
+  </div>
+  <div class="top-bar" style="justify-content:center;padding:16px">
+    <div>
+      <h1 style="font-size:18px;text-align:center">⚡ UnityFlow</h1>
+      <p style="text-align:center">Volunteer Portal</p>
+    </div>
+  </div>
+  <div class="login-body">
+    <div class="login-hero">
+      <div class="login-icon">🙋</div>
+      <div class="login-title">Select Your Profile</div>
+      <div class="login-sub">Your NGO has added you to this team. Tap your name to begin.</div>
+    </div>
+    <div class="vol-card" id="volList">
+      <div style="padding:20px;text-align:center;color:var(--muted);font-size:14px">Loading volunteers…</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="screen" id="screen-main">
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <span class="status-right">📶 🔋</span>
+  </div>
+  <div class="top-bar">
+    <div class="avatar" id="mainAvatar">AS</div>
+    <div class="top-bar-text">
+      <h1 id="mainName">Arjun Sharma</h1>
+      <p id="mainStatus">● Available • Flood Relief</p>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab('incoming')">
+      Incoming
+      <span class="tab-count" id="incomingCount">0</span>
+    </div>
+    <div class="tab" onclick="switchTab('active')">
+      Active
+      <span class="tab-count" id="activeCount" style="background:var(--orange)">0</span>
+    </div>
+    <div class="tab" onclick="switchTab('history')">
+      History
+      <span class="tab-count" id="historyCount" style="background:var(--muted)">0</span>
+    </div>
+  </div>
+
+  <div class="task-list" id="taskList">
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <div class="empty-text">Loading tasks…</div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE SCREEN (overlaid) -->
+<div class="screen" id="screen-profile">
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <span class="status-right">📶 🔋</span>
+  </div>
+  <div class="top-bar">
+    <div class="top-bar-text"><h1>My Profile</h1></div>
+  </div>
+  <div class="profile-body">
+    <div class="profile-hero">
+      <div class="profile-av" id="profAv" style="background:var(--green)">AS</div>
+      <div class="profile-name" id="profName">Arjun Sharma</div>
+      <div class="profile-role" id="profRole">Flood Relief · Food and Hunger</div>
+      <div class="profile-stats">
+        <div style="text-align:center"><div class="stat-val" id="statCompleted">0</div><div class="stat-key">Completed</div></div>
+        <div style="text-align:center"><div class="stat-val" id="statActive">0</div><div class="stat-key">Active</div></div>
+        <div style="text-align:center"><div class="stat-val" style="color:var(--green)">●</div><div class="stat-key">Available</div></div>
+      </div>
+    </div>
+    <div class="profile-section">
+      <div class="profile-row">
+        <div class="row-icon" style="background:#E8F8F0">📋</div>
+        <div><div class="row-label">Skills</div><div class="row-val" id="profSkills">Flood Relief</div></div>
+      </div>
+      <div class="profile-row">
+        <div class="row-icon" style="background:#FFF3E0">🏢</div>
+        <div><div class="row-label">NGO</div><div class="row-val">UnityFlow Operations</div></div>
+      </div>
+      <div class="profile-row">
+        <div class="row-icon" style="background:#E3F2FD">📍</div>
+        <div><div class="row-label">Location</div><div class="row-val">Bengaluru, Karnataka</div></div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">Sign Out</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV (shown when main/profile active) -->
+<div class="bottom-nav" id="bottomNav" style="display:none">
+  <div class="nav-item active" id="nav-tasks" onclick="showMain()">
+    <span class="nav-icon">📋</span>Tasks
+  </div>
+  <div class="nav-item" id="nav-profile" onclick="showProfile()">
+    <span class="nav-icon">👤</span>Profile
+  </div>
+</div>
+
+<script>
+const API = 'https://unityflow-backend-71bj.onrender.com/api';
+const COLORS = ['#25D366','#128C7E','#00BCD4','#FF9500','#007AFF','#5856D6','#FF2D55','#34AADC'];
+const SECTOR_ICONS = {'Flood Relief':'🌊','Healthcare':'🏥','Women Safety':'🛡️','Food and Hunger':'🍱','Food & Hunger':'🍱','Education':'📚','Other':'📍'};
+const URGENCY_LABELS = ['','MINIMAL','LOW','MEDIUM','HIGH','CRITICAL'];
+const URGENCY_STYLES = ['','#E8F8F0,#128C7E','#E8F8F0,#128C7E','#FFF8E1,#856404','#FFF3E0,#CC5500','#FFEBEE,#CC0000'];
+const FALLBACK_VOLS = [
+  {_id:'v1',name:'Arjun Sharma',skills:['Flood Relief','Food and Hunger'],available:true},
+  {_id:'v2',name:'Priya Nair',skills:['Healthcare','Women Safety'],available:true},
+  {_id:'v3',name:'Kiran Reddy',skills:['Flood Relief'],available:true},
+  {_id:'v4',name:'Meera Iyer',skills:['Education','Women Safety'],available:true},
+  {_id:'v5',name:'Rohan Das',skills:['Food and Hunger'],available:true},
+  {_id:'v6',name:'Sneha Pillai',skills:['Healthcare'],available:true},
+  {_id:'v7',name:'Vikram Singh',skills:['Flood Relief','Healthcare'],available:true},
+];
+
+let currentVol = null;
+let allTasks = [];
+let currentTab = 'incoming';
+let pollInterval = null;
+
+function initials(n){return (n||'V').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}
+
+async function loadVolunteers(){
+  let vols = FALLBACK_VOLS;
+  try{
+    const res = await fetch(`${API}/volunteers`);
+    if(res.ok){ const d = await res.json(); if(d.length) vols=d; }
+  }catch(e){}
+  const list = document.getElementById('volList');
+  list.innerHTML = vols.map((v,i)=>`
+    <div class="vol-item" onclick="selectVol(${JSON.stringify(v).replace(/"/g,'&quot;')})">
+      <div class="vol-av" style="background:${COLORS[i%COLORS.length]}">${initials(v.name)}</div>
+      <div class="vol-info">
+        <div class="vol-name">${v.name}</div>
+        <div class="vol-skills">${(v.skills||[]).join(', ')}</div>
+      </div>
+      <span class="vol-badge ${v.available!==false?'avail':'busy'}">${v.available!==false?'● Available':'○ Busy'}</span>
+    </div>
+  `).join('');
+}
+
+function selectVol(v){
+  currentVol = v;
+  const color = COLORS[0];
+  document.getElementById('mainAvatar').textContent = initials(v.name);
+  document.getElementById('mainAvatar').style.background = color;
+  document.getElementById('mainName').textContent = v.name;
+  document.getElementById('mainStatus').textContent = `● Available · ${(v.skills||[]).join(', ')}`;
+  document.getElementById('profAv').textContent = initials(v.name);
+  document.getElementById('profAv').style.background = color;
+  document.getElementById('profName').textContent = v.name;
+  document.getElementById('profRole').textContent = (v.skills||[]).join(' · ');
+  document.getElementById('profSkills').textContent = (v.skills||[]).join(', ');
+  showScreen('screen-main');
+  document.getElementById('bottomNav').style.display='flex';
+  startPolling();
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function showMain(){
+  showScreen('screen-main');
+  document.getElementById('nav-tasks').classList.add('active');
+  document.getElementById('nav-profile').classList.remove('active');
+}
+function showProfile(){
+  const comp = allTasks.filter(t=>t.status==='completed'&&t?.assignedVolunteer?._id===currentVol?._id).length;
+  const act = allTasks.filter(t=>t.status==='assigned'&&t?.assignedVolunteer?._id===currentVol?._id).length;
+  document.getElementById('statCompleted').textContent = comp;
+  document.getElementById('statActive').textContent = act;
+  showScreen('screen-profile');
+  document.getElementById('nav-profile').classList.add('active');
+  document.getElementById('nav-tasks').classList.remove('active');
+}
+function logout(){
+  clearInterval(pollInterval);
+  currentVol=null; allTasks=[];
+  document.getElementById('bottomNav').style.display='none';
+  showScreen('screen-login');
+}
+
+function startPolling(){
+  fetchTasks();
+  pollInterval = setInterval(fetchTasks, 10000);
+}
+
+async function fetchTasks(){
+  try{
+    const res = await fetch(`${API}/tasks`);
+    const d = await res.json();
+    allTasks = d.tasks||d||[];
+  }catch(e){ if(!allTasks.length) allTasks = getDemoTasks(); }
+  renderTasks();
+}
+
+function getDemoTasks(){
+  return [
+    {_id:'t1',sector:'Flood Relief',description:'Basement waterlogged, residents trapped on upper floor. Need immediate evacuation help.',urgency:5,status:'open',location:{lat:12.9611,lng:77.6387}},
+    {_id:'t2',sector:'Healthcare',description:'Elderly woman unconscious, no ambulance available. Needs first aid.',urgency:5,status:'open',location:{lat:12.9352,lng:77.6245}},
+    {_id:'t3',sector:'Food and Hunger',description:'Shelter camp running out of food. 50+ people waiting.',urgency:4,status:'open',location:{lat:12.9539,lng:77.5739}},
+    {_id:'t4',sector:'Women Safety',description:'Woman being harassed near KR Market, needs safe escort.',urgency:4,status:'open',location:{lat:12.9719,lng:77.6412}},
+  ];
+}
+
+function switchTab(tab){
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab')[['incoming','active','history'].indexOf(tab)].classList.add('active');
+  renderTasks();
+}
+
+function renderTasks(){
+  const vid = currentVol?._id;
+  const incoming = allTasks.filter(t=>t.status==='open');
+  const active = allTasks.filter(t=>t.status==='assigned'&&t?.assignedVolunteer?._id===vid);
+  const history = allTasks.filter(t=>t.status==='completed'&&t?.assignedVolunteer?._id===vid);
+
+  document.getElementById('incomingCount').textContent = incoming.length;
+  document.getElementById('activeCount').textContent = active.length;
+  document.getElementById('historyCount').textContent = history.length;
+
+  let tasks;
+  if(currentTab==='incoming') tasks = incoming;
+  else if(currentTab==='active') tasks = active;
+  else tasks = history;
+
+  const list = document.getElementById('taskList');
+  if(!tasks.length){
+    const msgs = {incoming:'No open tasks right now. Check back soon!',active:'No active tasks. Accept an incoming task to get started.',history:'No completed tasks yet. Your completed tasks will appear here.'};
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">${currentTab==='history'?'🏆':currentTab==='active'?'⚡':'📭'}</div><div class="empty-text">${msgs[currentTab]}</div></div>`;
+    return;
+  }
+
+  list.innerHTML = tasks.map(task=>{
+    const [bg,col] = (URGENCY_STYLES[task.urgency]||'#f0f0f0,#888').split(',');
+    return `
+    <div class="task-card">
+      <div class="card-head">
+        <div class="card-sector">
+          <span class="sector-icon">${SECTOR_ICONS[task.sector]||'📍'}</span>
+          <div>
+            <div class="sector-name">${task.sector}</div>
+            <div class="card-loc">📍 ${task?.location?.lat?.toFixed(4)||'12.97'}, ${task?.location?.lng?.toFixed(4)||'77.59'}</div>
+          </div>
+        </div>
+        <span class="urgency-pill" style="background:${bg};color:${col}">${URGENCY_LABELS[task.urgency]||'MEDIUM'}</span>
+      </div>
+      <div class="card-desc">${task.description}</div>
+      ${currentTab==='incoming'?`
+        <div class="card-actions">
+          <button class="btn-accept" onclick="acceptTask('${task._id}',this)">✅ Accept</button>
+          <button class="btn-decline" onclick="declineTask(this)">✕ Decline</button>
+        </div>
+      `:''}
+      ${currentTab==='active'?`
+        <button class="btn-complete" onclick="completeTask('${task._id}',this)">✅ Mark Complete</button>
+      `:''}
+      ${currentTab==='history'?`
+        <div class="done-tag">✅ Completed · ${task.completedAt?new Date(task.completedAt).toLocaleString():'Earlier'}</div>
+      `:''}
+    </div>
+  `}).join('');
+}
+
+async function acceptTask(id, btn){
+  btn.disabled=true; btn.textContent='Accepting…';
+  try{
+    const res = await fetch(`${API}/tasks/${id}/assign`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({volunteerId:currentVol._id})});
+    if(res.ok){ showToast('✅ Task accepted!'); await fetchTasks(); switchTab('active'); }
+    else{ showToast('❌ Failed'); btn.disabled=false; btn.textContent='✅ Accept'; }
+  }catch(e){ showToast('✅ Task accepted! (offline)'); btn.closest('.task-card').remove(); switchTab('active'); }
+}
+
+function declineTask(btn){ btn.closest('.task-card').style.opacity='0.4'; setTimeout(()=>btn.closest('.task-card').remove(),300); showToast('Task skipped'); }
+
+async function completeTask(id, btn){
+  btn.disabled=true; btn.textContent='Updating…';
+  try{
+    const res = await fetch(`${API}/tasks/${id}/complete`,{method:'POST',headers:{'Content-Type':'application/json'}});
+    if(res.ok){ showToast('🎉 Task completed!'); await fetchTasks(); switchTab('history'); }
+    else{ showToast('❌ Failed'); btn.disabled=false; btn.textContent='✅ Mark Complete'; }
+  }catch(e){ showToast('🎉 Marked complete! (offline)'); btn.closest('.task-card').remove(); switchTab('history'); }
+}
+
+let toastTimer;
+function showToast(msg){
+  document.querySelector('.toast')?.remove();
+  clearTimeout(toastTimer);
+  const t = document.createElement('div');
+  t.className='toast'; t.textContent=msg;
+  document.body.appendChild(t);
+  toastTimer = setTimeout(()=>t.remove(),2500);
+}
+
+loadVolunteers();
+</script>
+</body>
+</html>
