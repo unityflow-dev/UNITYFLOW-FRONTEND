@@ -59,7 +59,7 @@ function MatchModal({ task, onClose, onAssigned }) {
   const assign = async (vid, vname) => {
     setAssigning(vid);
     try {
-      const res = await fetch(`${API}/assign`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({task_id:task._id,volunteer_id:vid})});
+      const res = await fetch(`${API}/tasks/${task._id}/assign`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({volunteerId:vid})});
       if (res.ok) { setToast(`✅ Assigned to ${vname}`); setTimeout(()=>{setToast(null);onAssigned();onClose();},1800); }
       else { setToast("❌ Failed"); setTimeout(()=>setToast(null),2000); }
     } catch { setToast("❌ Network error"); setTimeout(()=>setToast(null),2000); }
@@ -99,7 +99,7 @@ function MatchModal({ task, onClose, onAssigned }) {
               <div style={{background:"rgba(255,255,255,0.06)",borderRadius:4,height:4,marginBottom:10}}>
                 <div style={{height:"100%",borderRadius:4,background:"linear-gradient(90deg,#38bdf8,#22c55e)",width:`${pct}%`}} />
               </div>
-              <button onClick={()=>assign(m?.volunteer?._id,m.volunteer_name)} disabled={assigning===m?.volunteer?._id} style={{width:"100%",padding:"8px 0",background:assigning===m?.volunteer?._id?"#1e293b":"linear-gradient(90deg,#0ea5e9,#38bdf8)",border:"none",borderRadius:6,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",fontFamily:"monospace",letterSpacing:1}}>
+              <button onClick={()=>assign(m?.volunteer?._id,m?.volunteer?.name)} disabled={assigning===m?.volunteer?._id} style={{width:"100%",padding:"8px 0",background:assigning===m?.volunteer?._id?"#1e293b":"linear-gradient(90deg,#0ea5e9,#38bdf8)",border:"none",borderRadius:6,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",fontFamily:"monospace",letterSpacing:1}}>
                 {assigning===m?.volunteer?._id?"ASSIGNING…":"ASSIGN VOLUNTEER"}
               </button>
             </div>
