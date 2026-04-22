@@ -80,15 +80,15 @@ function MatchModal({ task, onClose, onAssigned }) {
         : matches.length===0 ? <div style={{color:"#64748b",textAlign:"center",padding:32}}>No volunteers available</div>
         : matches.map((m,i) => {
           const pct = Math.min(100, Math.round(m.score ?? 0));
-          const initials = (m.volunteer_name||"V").split(" ").map(w=>w[0]).join("").slice(0,2);
+          const initials = (m?.volunteer?.name||"V").split(" ").map(w=>w[0]).join("").slice(0,2);
           return (
-            <div key={m.volunteer_id} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(56,189,248,0.15)",borderRadius:10,padding:"14px 16px",marginBottom:10}}>
+            <div key={m?.volunteer?._id} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(56,189,248,0.15)",borderRadius:10,padding:"14px 16px",marginBottom:10}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
                 <div style={{display:"flex",alignItems:"center",gap:10}}>
                   <div style={{width:36,height:36,borderRadius:"50%",background:"linear-gradient(135deg,#38bdf8,#818cf8)",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:700,fontSize:13}}>{initials}</div>
                   <div>
-                    <div style={{color:"#f1f5f9",fontWeight:600,fontSize:14}}>{m.volunteer_name} {i===0&&<span style={{color:"#fbbf24",fontSize:12}}>⭐ TOP</span>}</div>
-                    <div style={{color:"#64748b",fontSize:12,fontFamily:"monospace"}}>{m.reason_text||`${m.distance_km?.toFixed(1)} km away`}</div>
+                    <div style={{color:"#f1f5f9",fontWeight:600,fontSize:14}}>{m?.volunteer?.name} {i===0&&<span style={{color:"#fbbf24",fontSize:12}}>⭐ TOP</span>}</div>
+                    <div style={{color:"#64748b",fontSize:12,fontFamily:"monospace"}}>{m.reason_text||`${m?.distance?.toFixed(1)} km away`}</div>
                   </div>
                 </div>
                 <div style={{textAlign:"right"}}>
@@ -99,8 +99,8 @@ function MatchModal({ task, onClose, onAssigned }) {
               <div style={{background:"rgba(255,255,255,0.06)",borderRadius:4,height:4,marginBottom:10}}>
                 <div style={{height:"100%",borderRadius:4,background:"linear-gradient(90deg,#38bdf8,#22c55e)",width:`${pct}%`}} />
               </div>
-              <button onClick={()=>assign(m.volunteer_id,m.volunteer_name)} disabled={assigning===m.volunteer_id} style={{width:"100%",padding:"8px 0",background:assigning===m.volunteer_id?"#1e293b":"linear-gradient(90deg,#0ea5e9,#38bdf8)",border:"none",borderRadius:6,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",fontFamily:"monospace",letterSpacing:1}}>
-                {assigning===m.volunteer_id?"ASSIGNING…":"ASSIGN VOLUNTEER"}
+              <button onClick={()=>assign(m?.volunteer?._id,m.volunteer_name)} disabled={assigning===m?.volunteer?._id} style={{width:"100%",padding:"8px 0",background:assigning===m?.volunteer?._id?"#1e293b":"linear-gradient(90deg,#0ea5e9,#38bdf8)",border:"none",borderRadius:6,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",fontFamily:"monospace",letterSpacing:1}}>
+                {assigning===m?.volunteer?._id?"ASSIGNING…":"ASSIGN VOLUNTEER"}
               </button>
             </div>
           );
