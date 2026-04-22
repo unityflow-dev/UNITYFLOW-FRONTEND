@@ -54,7 +54,7 @@ function MatchModal({ task, onClose, onAssigned }) {
   const [assigning, setAssigning] = useState(null);
   const [toast, setToast] = useState(null);
   useEffect(() => {
-    fetch(`${API}/match/${task._id}`).then(r=>r.json()).then(d=>{setMatches(d);setLoading(false);}).catch(()=>setLoading(false));
+    fetch(`${API}/match/${task._id}`).then(r=>r.json()).then(d=>{setMatches(d.matches || d);setLoading(false);}).catch(()=>setLoading(false));
   }, [task._id]);
   const assign = async (vid, vname) => {
     setAssigning(vid);
