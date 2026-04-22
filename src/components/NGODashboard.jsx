@@ -135,7 +135,7 @@ export default function NGODashboard() {
     try {
       const res = await fetch(`${API}/tasks`);
       const data = await res.json();
-      setTasks(data);
+      setTasks(data.tasks || data);
       setLastRefresh(new Date());
     } catch(e) { console.error(e); }
   }, []);
