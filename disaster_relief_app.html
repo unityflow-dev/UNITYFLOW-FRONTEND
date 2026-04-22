@@ -1,0 +1,495 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0a0e1a;--surface:#111827;--surface2:#1a2235;--surface3:#1e2d42;
+    --accent:#00d4aa;--accent2:#ff6b35;--accent3:#3b9eff;
+    --text:#e8edf5;--text2:#8b9ab5;--text3:#4a5568;
+    --danger:#ef4444;--warn:#f59e0b;--ok:#22c55e;
+    --font-display:'Rajdhani',sans-serif;
+    --font-body:'IBM Plex Sans',sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+    --radius:10px;--radius-lg:16px;
+  }
+  body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow-x:hidden}
+  .app-shell{display:flex;flex-direction:column;min-height:600px;background:var(--bg)}
+  
+  /* NAV */
+  nav{background:var(--surface);border-bottom:1px solid rgba(0,212,170,0.15);padding:0 16px;height:52px;display:flex;align-items:center;gap:0;position:sticky;top:0;z-index:100}
+  .nav-brand{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--accent);letter-spacing:2px;margin-right:auto;display:flex;align-items:center;gap:8px}
+  .nav-brand svg{width:22px;height:22px}
+  .nav-links{display:flex;gap:2px}
+  .nav-btn{background:none;border:none;color:var(--text2);font-family:var(--font-body);font-size:11px;font-weight:500;padding:6px 10px;border-radius:6px;cursor:pointer;transition:all 0.15s;letter-spacing:0.5px;text-transform:uppercase}
+  .nav-btn:hover{color:var(--text);background:var(--surface2)}
+  .nav-btn.active{color:var(--accent);background:rgba(0,212,170,0.1)}
+  
+  /* PAGES */
+  .page{display:none;padding:20px 16px;animation:fadeIn 0.2s ease}
+  .page.visible{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  
+  /* CITIZEN REPORT */
+  .report-header{margin-bottom:20px}
+  .report-header h1{font-family:var(--font-display);font-size:28px;font-weight:700;letter-spacing:1px;color:var(--text);line-height:1}
+  .report-header p{font-size:13px;color:var(--text2);margin-top:4px}
+  .section-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);font-family:var(--font-mono);margin-bottom:10px}
+  .sector-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+  .sector-tile{background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius);padding:14px 8px;text-align:center;cursor:pointer;transition:all 0.15s;font-size:13px;font-weight:500;color:var(--text2)}
+  .sector-tile .tile-icon{font-size:20px;display:block;margin-bottom:6px}
+  .sector-tile:hover{border-color:var(--accent);color:var(--text)}
+  .sector-tile.active{border-color:var(--accent);background:rgba(0,212,170,0.08);color:var(--accent)}
+  .loc-btn{width:100%;background:var(--surface2);border:1px solid var(--surface3);border-radius:var(--radius);padding:11px;color:var(--text2);font-family:var(--font-body);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;transition:all 0.15s}
+  .loc-btn:hover{border-color:var(--accent3);color:var(--accent3)}
+  .loc-btn.located{border-color:var(--ok);color:var(--ok);background:rgba(34,197,94,0.05)}
+  .urgency-row{display:flex;gap:6px;margin-bottom:20px}
+  .urg-btn{flex:1;padding:10px 0;border:1px solid var(--surface3);border-radius:var(--radius);background:var(--surface);cursor:pointer;font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--text2);transition:all 0.15s}
+  .urg-btn:hover{opacity:0.8}
+  .urg-btn.active{color:#fff;border-color:transparent}
+  .urg-1.active{background:#166534}
+  .urg-2.active{background:#15803d}
+  .urg-3.active{background:#d97706}
+  .urg-4.active{background:#ea580c}
+  .urg-5.active{background:#dc2626}
+  textarea{width:100%;background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius);padding:12px;color:var(--text);font-family:var(--font-body);font-size:14px;resize:none;height:90px;margin-bottom:16px;outline:none;transition:border-color 0.15s}
+  textarea:focus{border-color:var(--accent)}
+  textarea::placeholder{color:var(--text3)}
+  .submit-btn{width:100%;padding:14px;background:var(--accent);border:none;border-radius:var(--radius);color:#000;font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden}
+  .submit-btn:hover{background:#00bfa3}
+  .submit-btn:active{transform:scale(0.99)}
+  .submit-btn.loading{background:var(--surface2);color:var(--text2)}
+  .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  
+  /* SUCCESS */
+  .success-wrap{text-align:center;padding:40px 20px}
+  .success-icon{width:72px;height:72px;background:rgba(34,197,94,0.1);border:2px solid var(--ok);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px}
+  .success-wrap h2{font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--ok);letter-spacing:1px;margin-bottom:8px}
+  .success-wrap p{color:var(--text2);font-size:14px;margin-bottom:24px}
+  .ticket{background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius);padding:16px;font-family:var(--font-mono);font-size:12px;color:var(--text2);text-align:left;margin-bottom:24px}
+  .ticket span{color:var(--accent)}
+  .back-btn{background:none;border:1px solid var(--surface3);border-radius:var(--radius);padding:10px 24px;color:var(--text2);font-family:var(--font-body);cursor:pointer;transition:all 0.15s}
+  .back-btn:hover{border-color:var(--accent);color:var(--accent)}
+  
+  /* OTP */
+  .otp-wrap{max-width:320px;margin:30px auto;text-align:center}
+  .otp-wrap h2{font-family:var(--font-display);font-size:24px;font-weight:700;letter-spacing:1px;margin-bottom:6px}
+  .otp-wrap p{color:var(--text2);font-size:13px;margin-bottom:24px}
+  .otp-fields{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
+  .otp-input{width:44px;height:52px;background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius);text-align:center;color:var(--text);font-family:var(--font-mono);font-size:22px;font-weight:500;outline:none;transition:border-color 0.15s}
+  .otp-input:focus{border-color:var(--accent)}
+  .verify-btn{width:100%;padding:13px;background:var(--accent3);border:none;border-radius:var(--radius);color:#fff;font-family:var(--font-display);font-size:15px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all 0.15s;margin-bottom:12px}
+  .verify-btn:hover{background:#2a85e0}
+  .resend-link{color:var(--text3);font-size:12px;cursor:pointer;background:none;border:none}
+  .resend-link:hover{color:var(--accent3)}
+  
+  /* REGISTER */
+  .register-wrap{max-width:400px;margin:0 auto}
+  .register-wrap h2{font-family:var(--font-display);font-size:26px;font-weight:700;letter-spacing:1px;margin-bottom:4px}
+  .register-wrap p{color:var(--text2);font-size:13px;margin-bottom:24px}
+  .form-group{margin-bottom:14px}
+  .form-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);font-family:var(--font-mono);display:block;margin-bottom:6px}
+  .form-input{width:100%;background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius);padding:11px 14px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;transition:border-color 0.15s}
+  .form-input:focus{border-color:var(--accent3)}
+  .form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b9ab5' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+  .skill-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .skill-tag{padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid var(--surface3);background:var(--surface);color:var(--text2);transition:all 0.12s}
+  .skill-tag.active{background:rgba(59,158,255,0.12);border-color:var(--accent3);color:var(--accent3)}
+  .avail-toggle{display:flex;align-items:center;gap:12px;padding:14px;background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius);cursor:pointer;margin-bottom:16px}
+  .toggle-track{width:40px;height:22px;border-radius:11px;background:var(--surface3);position:relative;transition:background 0.2s;flex-shrink:0}
+  .toggle-track.on{background:var(--ok)}
+  .toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform 0.2s}
+  .toggle-track.on .toggle-thumb{transform:translateX(18px)}
+  .avail-label{font-size:14px;color:var(--text)}
+  .avail-sub{font-size:11px;color:var(--text2)}
+  .register-btn{width:100%;padding:13px;background:var(--accent3);border:none;border-radius:var(--radius);color:#fff;font-family:var(--font-display);font-size:15px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all 0.15s}
+  .register-btn:hover{background:#2a85e0}
+  
+  /* NGO DASHBOARD */
+  .dashboard-layout{display:grid;grid-template-columns:260px 1fr;gap:0;min-height:480px;border:1px solid var(--surface3);border-radius:var(--radius-lg);overflow:hidden}
+  .sidebar{background:var(--surface);border-right:1px solid var(--surface3);padding:0}
+  .sidebar-header{padding:14px 16px;border-bottom:1px solid var(--surface3);font-family:var(--font-display);font-size:14px;font-weight:600;letter-spacing:1px;color:var(--text2);display:flex;align-items:center;justify-content:space-between}
+  .sidebar-filter{display:flex;gap:4px;padding:10px 12px;border-bottom:1px solid var(--surface3)}
+  .filter-pill{flex:1;text-align:center;padding:5px 6px;border-radius:6px;font-size:11px;cursor:pointer;color:var(--text3);transition:all 0.12s;font-family:var(--font-mono)}
+  .filter-pill.active{background:rgba(0,212,170,0.1);color:var(--accent)}
+  .task-list{overflow-y:auto;max-height:380px}
+  .task-item{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.1s;position:relative}
+  .task-item:hover{background:rgba(255,255,255,0.03)}
+  .task-item.selected{background:rgba(0,212,170,0.06)}
+  .task-item::before{content:'';position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:0 2px 2px 0}
+  .task-item.u5::before{background:var(--danger)}
+  .task-item.u4::before{background:#f97316}
+  .task-item.u3::before{background:var(--warn)}
+  .task-item.u2::before{background:#84cc16}
+  .task-item.u1::before{background:var(--ok)}
+  .task-sector{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px;display:flex;align-items:center;gap:6px}
+  .urgency-badge{font-size:10px;padding:1px 6px;border-radius:4px;font-family:var(--font-mono)}
+  .u5-badge{background:rgba(239,68,68,0.15);color:#ef4444}
+  .u4-badge{background:rgba(249,115,22,0.15);color:#f97316}
+  .u3-badge{background:rgba(245,158,11,0.15);color:#f59e0b}
+  .task-loc{font-size:11px;color:var(--text3);margin-bottom:3px}
+  .task-desc{font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .map-area{background:var(--surface2);position:relative;overflow:hidden}
+  .map-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:40px 40px}
+  .map-overlay{position:absolute;inset:0;display:flex;flex-direction:column;padding:16px}
+  .map-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .map-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;font-family:var(--font-mono);color:var(--text3)}
+  .map-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:auto}
+  .stat-card{background:rgba(10,14,26,0.7);border:1px solid var(--surface3);border-radius:var(--radius);padding:10px 12px;backdrop-filter:blur(4px)}
+  .stat-val{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--text);line-height:1}
+  .stat-lbl{font-size:10px;color:var(--text3);font-family:var(--font-mono);letter-spacing:1px;margin-top:2px}
+  .pin{position:absolute;cursor:pointer;transition:transform 0.15s}
+  .pin:hover{transform:scale(1.2)}
+  .pin-dot{width:12px;height:12px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 8px currentColor}
+  .pin-label{position:absolute;left:16px;top:-4px;font-size:10px;font-family:var(--font-mono);white-space:nowrap;background:rgba(10,14,26,0.8);padding:2px 6px;border-radius:4px}
+  
+  /* VOLUNTEER */
+  .vol-header{margin-bottom:20px}
+  .vol-header h2{font-family:var(--font-display);font-size:26px;font-weight:700;letter-spacing:1px;margin-bottom:4px}
+  .vol-status{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+  .status-dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 6px var(--ok);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+  .status-text{font-size:13px;color:var(--ok);font-family:var(--font-mono)}
+  .vol-tabs{display:flex;gap:0;margin-bottom:16px;border:1px solid var(--surface3);border-radius:var(--radius);overflow:hidden}
+  .vol-tab{flex:1;padding:9px;text-align:center;font-size:12px;font-weight:500;cursor:pointer;color:var(--text2);transition:all 0.15s;background:var(--surface)}
+  .vol-tab:not(:last-child){border-right:1px solid var(--surface3)}
+  .vol-tab.active{background:var(--surface2);color:var(--text)}
+  .task-card{background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px;position:relative;overflow:hidden}
+  .task-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+  .task-card.critical::after{background:linear-gradient(90deg,var(--danger),#f97316)}
+  .task-card.moderate::after{background:linear-gradient(90deg,var(--warn),#84cc16)}
+  .task-card-header{display:flex;align-items:start;justify-content:space-between;margin-bottom:10px}
+  .task-title{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:0.5px}
+  .task-dist{font-size:12px;color:var(--accent3);font-family:var(--font-mono)}
+  .task-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .meta-chip{font-size:11px;padding:3px 8px;border-radius:6px;background:var(--surface2);color:var(--text2);font-family:var(--font-mono)}
+  .task-desc-text{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+  .task-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .accept-btn{padding:10px;background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.3);border-radius:var(--radius);color:var(--accent);font-family:var(--font-display);font-size:14px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all 0.15s}
+  .accept-btn:hover{background:rgba(0,212,170,0.2)}
+  .decline-btn{padding:10px;background:var(--surface2);border:1px solid var(--surface3);border-radius:var(--radius);color:var(--text2);font-family:var(--font-body);font-size:13px;cursor:pointer;transition:all 0.15s}
+  .decline-btn:hover{border-color:var(--danger);color:var(--danger)}
+  .empty-state{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
+</style>
+
+<div class="app-shell">
+  <nav>
+    <div class="nav-brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      SAHAYTA
+    </div>
+    <div class="nav-links">
+      <button class="nav-btn active" onclick="showPage('citizen')">Report</button>
+      <button class="nav-btn" onclick="showPage('otp')">Verify</button>
+      <button class="nav-btn" onclick="showPage('register')">Register</button>
+      <button class="nav-btn" onclick="showPage('ngo')">NGO</button>
+      <button class="nav-btn" onclick="showPage('volunteer')">Volunteer</button>
+    </div>
+  </nav>
+
+  <!-- CITIZEN REPORT -->
+  <div class="page visible" id="page-citizen">
+    <div class="report-header">
+      <h1>REPORT ISSUE</h1>
+      <p>Submit a crisis report to mobilize nearest volunteers</p>
+    </div>
+    <div class="section-label">Select category</div>
+    <div class="sector-grid" id="sector-grid">
+      <div class="sector-tile" onclick="selectSector(this,'Healthcare')"><span class="tile-icon">🏥</span>Healthcare</div>
+      <div class="sector-tile" onclick="selectSector(this,'Flood')"><span class="tile-icon">🌊</span>Flood</div>
+      <div class="sector-tile" onclick="selectSector(this,'Food')"><span class="tile-icon">🍲</span>Food</div>
+      <div class="sector-tile" onclick="selectSector(this,'Education')"><span class="tile-icon">📚</span>Education</div>
+      <div class="sector-tile" onclick="selectSector(this,'Women Safety')"><span class="tile-icon">🛡️</span>Women Safety</div>
+      <div class="sector-tile" onclick="selectSector(this,'Infrastructure')"><span class="tile-icon">🔧</span>Infrastructure</div>
+    </div>
+    <button class="loc-btn" id="loc-btn" onclick="handleLocation()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+      Use My Location
+    </button>
+    <div class="section-label">Urgency level</div>
+    <div class="urgency-row" id="urgency-row">
+      <button class="urg-btn urg-1" onclick="selectUrgency(1,this)">1</button>
+      <button class="urg-btn urg-2" onclick="selectUrgency(2,this)">2</button>
+      <button class="urg-btn urg-3" onclick="selectUrgency(3,this)">3</button>
+      <button class="urg-btn urg-4" onclick="selectUrgency(4,this)">4</button>
+      <button class="urg-btn urg-5" onclick="selectUrgency(5,this)">5</button>
+    </div>
+    <div class="section-label">Description</div>
+    <textarea id="issue-desc" placeholder="Describe the situation in detail..."></textarea>
+    <button class="submit-btn" id="submit-btn" onclick="handleSubmit()">REPORT NOW</button>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="page" id="page-success">
+    <div class="success-wrap">
+      <div class="success-icon">✓</div>
+      <h2>REPORT SUBMITTED</h2>
+      <p>Your report has been received. Nearest volunteers are being notified.</p>
+      <div class="ticket">
+        Ticket ID: <span id="ticket-id">SHY-2024-00000</span><br>
+        Status: <span style="color:var(--warn)">DISPATCHING</span><br>
+        ETA: <span>~12 minutes</span>
+      </div>
+      <button class="back-btn" onclick="showPage('citizen')">← Submit Another Report</button>
+    </div>
+  </div>
+
+  <!-- OTP -->
+  <div class="page" id="page-otp">
+    <div class="otp-wrap">
+      <h2>VERIFY OTP</h2>
+      <p>Enter the 6-digit code sent to your registered number</p>
+      <div class="otp-fields">
+        <input class="otp-input" maxlength="1" oninput="moveOTP(this,1)">
+        <input class="otp-input" maxlength="1" oninput="moveOTP(this,2)">
+        <input class="otp-input" maxlength="1" oninput="moveOTP(this,3)">
+        <input class="otp-input" maxlength="1" oninput="moveOTP(this,4)">
+        <input class="otp-input" maxlength="1" oninput="moveOTP(this,5)">
+        <input class="otp-input" maxlength="1" oninput="moveOTP(this,6)">
+      </div>
+      <button class="verify-btn" onclick="showPage('register')">VERIFY →</button>
+      <button class="resend-link">Resend code (30s)</button>
+    </div>
+  </div>
+
+  <!-- REGISTER -->
+  <div class="page" id="page-register">
+    <div class="register-wrap">
+      <h2>VOLUNTEER REGISTRATION</h2>
+      <p>Join the network — your skills can save lives</p>
+      <div class="form-group">
+        <label class="form-label">Full name</label>
+        <input class="form-input" placeholder="e.g. Ananya Sharma">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone number</label>
+        <input class="form-input" placeholder="+91 98765 43210">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Skills</label>
+        <div class="skill-tags" id="skill-tags">
+          <span class="skill-tag" onclick="toggleSkill(this)">First Aid</span>
+          <span class="skill-tag" onclick="toggleSkill(this)">Search & Rescue</span>
+          <span class="skill-tag" onclick="toggleSkill(this)">Medical</span>
+          <span class="skill-tag" onclick="toggleSkill(this)">Counseling</span>
+          <span class="skill-tag" onclick="toggleSkill(this)">Logistics</span>
+          <span class="skill-tag" onclick="toggleSkill(this)">Transport</span>
+          <span class="skill-tag" onclick="toggleSkill(this)">Technical</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sector</label>
+        <select class="form-input form-select">
+          <option>Healthcare</option><option>Flood</option><option>Food</option>
+          <option>Education</option><option>Women Safety</option>
+        </select>
+      </div>
+      <div class="avail-toggle" onclick="toggleAvail()">
+        <div class="toggle-track on" id="avail-track"><div class="toggle-thumb"></div></div>
+        <div>
+          <div class="avail-label">Available Now</div>
+          <div class="avail-sub" id="avail-sub">You will receive task assignments</div>
+        </div>
+      </div>
+      <button class="register-btn">REGISTER AS VOLUNTEER</button>
+    </div>
+  </div>
+
+  <!-- NGO DASHBOARD -->
+  <div class="page" id="page-ngo">
+    <div class="dashboard-layout">
+      <div class="sidebar">
+        <div class="sidebar-header">
+          ACTIVE TASKS
+          <span style="background:rgba(239,68,68,0.15);color:#ef4444;font-size:11px;padding:2px 7px;border-radius:10px;font-family:var(--font-mono)">7 NEW</span>
+        </div>
+        <div class="sidebar-filter">
+          <span class="filter-pill active" onclick="filterTasks(this,'all')">All</span>
+          <span class="filter-pill" onclick="filterTasks(this,'critical')">Critical</span>
+          <span class="filter-pill" onclick="filterTasks(this,'flood')">Flood</span>
+          <span class="filter-pill" onclick="filterTasks(this,'health')">Health</span>
+        </div>
+        <div class="task-list" id="task-list">
+          <div class="task-item u5 selected" onclick="selectTask(this)">
+            <div class="task-sector">Flood <span class="urgency-badge u5-badge">U5</span></div>
+            <div class="task-loc">📍 Shivamogga, Ward 14</div>
+            <div class="task-desc">Residential area submerged, 12 families trapped</div>
+          </div>
+          <div class="task-item u5" onclick="selectTask(this)">
+            <div class="task-sector">Healthcare <span class="urgency-badge u5-badge">U5</span></div>
+            <div class="task-loc">📍 Dharwad, Near Bus Stand</div>
+            <div class="task-desc">Medical emergency, no ambulance available</div>
+          </div>
+          <div class="task-item u4" onclick="selectTask(this)">
+            <div class="task-sector">Food <span class="urgency-badge u4-badge">U4</span></div>
+            <div class="task-loc">📍 Hubli, Sector 7</div>
+            <div class="task-desc">300+ displaced with no food supply</div>
+          </div>
+          <div class="task-item u3" onclick="selectTask(this)">
+            <div class="task-sector">Women Safety <span class="urgency-badge" style="background:rgba(245,158,11,0.15);color:#f59e0b">U3</span></div>
+            <div class="task-loc">📍 Belgaum, Camp Area</div>
+            <div class="task-desc">Safe shelter needed for 8 women with children</div>
+          </div>
+          <div class="task-item u2" onclick="selectTask(this)">
+            <div class="task-sector">Education</div>
+            <div class="task-loc">📍 Gadag, Village School</div>
+            <div class="task-desc">Temporary learning setup needed</div>
+          </div>
+        </div>
+      </div>
+      <div class="map-area">
+        <div class="map-grid"></div>
+        <div class="map-overlay">
+          <div class="map-top">
+            <span class="map-label">Karnataka Crisis Map</span>
+            <span style="font-size:10px;color:var(--text3);font-family:var(--font-mono)">Live · Updated 2m ago</span>
+          </div>
+          <div style="position:relative;flex:1">
+            <div class="pin" style="top:30%;left:35%;color:#ef4444"><div class="pin-dot" style="background:#ef4444"></div><div class="pin-label">Shivamogga</div></div>
+            <div class="pin" style="top:18%;left:28%;color:#ef4444"><div class="pin-dot" style="background:#ef4444"></div><div class="pin-label">Dharwad</div></div>
+            <div class="pin" style="top:15%;left:32%;color:#f97316"><div class="pin-dot" style="background:#f97316"></div><div class="pin-label">Hubli</div></div>
+            <div class="pin" style="top:10%;left:18%;color:#f59e0b"><div class="pin-dot" style="background:#f59e0b"></div><div class="pin-label">Belgaum</div></div>
+            <div class="pin" style="top:20%;left:42%;color:#84cc16"><div class="pin-dot" style="background:#84cc16"></div><div class="pin-label">Gadag</div></div>
+          </div>
+          <div class="map-stats">
+            <div class="stat-card"><div class="stat-val">24</div><div class="stat-lbl">Active Tasks</div></div>
+            <div class="stat-card"><div class="stat-val" style="color:var(--accent)">87</div><div class="stat-lbl">Volunteers</div></div>
+            <div class="stat-card"><div class="stat-val" style="color:var(--warn)">7</div><div class="stat-lbl">Critical</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VOLUNTEER APP -->
+  <div class="page" id="page-volunteer">
+    <div class="vol-header">
+      <h2>TASK BOARD</h2>
+      <div class="vol-status">
+        <div class="status-dot"></div>
+        <span class="status-text">Online · Available</span>
+      </div>
+    </div>
+    <div class="vol-tabs">
+      <div class="vol-tab active" onclick="volTab(this,'nearby')">Nearby</div>
+      <div class="vol-tab" onclick="volTab(this,'sector')">My Sector</div>
+      <div class="vol-tab" onclick="volTab(this,'accepted')">Accepted</div>
+    </div>
+    <div id="vol-tasks">
+      <div class="task-card critical" id="task-flood">
+        <div class="task-card-header">
+          <div>
+            <div class="task-title">Flood Relief</div>
+            <div class="task-meta">
+              <span class="meta-chip">🌊 Flood</span>
+              <span class="meta-chip" style="color:var(--danger)">U5 · Critical</span>
+              <span class="meta-chip">12 families</span>
+            </div>
+          </div>
+          <div class="task-dist">0.8 km</div>
+        </div>
+        <div class="task-desc-text">Residential area submerged near Shivamogga Ward 14. 12 families requiring immediate evacuation assistance and emergency supplies.</div>
+        <div class="task-actions">
+          <button class="accept-btn" onclick="acceptTask('task-flood',this)">ACCEPT ✓</button>
+          <button class="decline-btn" onclick="declineTask('task-flood')">Decline</button>
+        </div>
+      </div>
+      <div class="task-card moderate" id="task-food">
+        <div class="task-card-header">
+          <div>
+            <div class="task-title">Food Distribution</div>
+            <div class="task-meta">
+              <span class="meta-chip">🍲 Food</span>
+              <span class="meta-chip" style="color:var(--warn)">U4 · High</span>
+              <span class="meta-chip">300+ people</span>
+            </div>
+          </div>
+          <div class="task-dist">2.3 km</div>
+        </div>
+        <div class="task-desc-text">Displaced families at Hubli Sector 7 camp require food supply coordination. Help needed for 3 hours, vehicle preferred.</div>
+        <div class="task-actions">
+          <button class="accept-btn" onclick="acceptTask('task-food',this)">ACCEPT ✓</button>
+          <button class="decline-btn" onclick="declineTask('task-food')">Decline</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let avail = true;
+  function showPage(p){
+    document.querySelectorAll('.page').forEach(x=>x.classList.remove('visible'));
+    document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+    document.getElementById('page-'+p).classList.add('visible');
+    const map={citizen:0,otp:1,register:2,ngo:3,volunteer:4};
+    document.querySelectorAll('.nav-btn')[map[p]||0].classList.add('active');
+  }
+  function selectSector(el,s){
+    document.querySelectorAll('.sector-tile').forEach(x=>x.classList.remove('active'));
+    el.classList.add('active');
+  }
+  function selectUrgency(u,el){
+    document.querySelectorAll('.urg-btn').forEach(x=>x.classList.remove('active'));
+    el.classList.add('active');
+  }
+  function handleLocation(){
+    const btn=document.getElementById('loc-btn');
+    btn.textContent='Locating...';
+    setTimeout(()=>{
+      btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Location captured (14.9°N, 75.6°E)';
+      btn.classList.add('located');
+    },1200);
+  }
+  function handleSubmit(){
+    const btn=document.getElementById('submit-btn');
+    btn.classList.add('loading');
+    btn.innerHTML='<div class="spinner"></div>';
+    setTimeout(()=>{
+      const id='SHY-2024-'+String(Math.floor(Math.random()*90000)+10000);
+      document.getElementById('ticket-id').textContent=id;
+      showPage('success');
+      btn.classList.remove('loading');
+      btn.textContent='REPORT NOW';
+    },1800);
+  }
+  function moveOTP(el,i){
+    if(el.value&&i<6){el.nextElementSibling&&el.nextElementSibling.focus()}
+  }
+  function toggleSkill(el){el.classList.toggle('active')}
+  function toggleAvail(){
+    avail=!avail;
+    const t=document.getElementById('avail-track');
+    const s=document.getElementById('avail-sub');
+    avail?t.classList.add('on'):t.classList.remove('on');
+    s.textContent=avail?'You will receive task assignments':'You are marked offline';
+  }
+  function selectTask(el){
+    document.querySelectorAll('.task-item').forEach(x=>x.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+  function filterTasks(el,f){
+    document.querySelectorAll('.filter-pill').forEach(x=>x.classList.remove('active'));
+    el.classList.add('active');
+  }
+  function volTab(el,t){
+    document.querySelectorAll('.vol-tab').forEach(x=>x.classList.remove('active'));
+    el.classList.add('active');
+  }
+  function acceptTask(id,btn){
+    const card=document.getElementById(id);
+    card.style.opacity='0.5';
+    card.style.transform='scale(0.98)';
+    btn.textContent='ACCEPTED ✓';
+    btn.style.background='rgba(0,212,170,0.25)';
+    btn.style.pointerEvents='none';
+    setTimeout(()=>{card.remove()},1500);
+  }
+  function declineTask(id){
+    const card=document.getElementById(id);
+    card.style.opacity='0';
+    card.style.transform='translateX(20px)';
+    card.style.transition='all 0.3s';
+    setTimeout(()=>{card.remove()},300);
+  }
+</script>
