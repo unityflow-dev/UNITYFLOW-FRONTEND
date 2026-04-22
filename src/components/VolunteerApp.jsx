@@ -138,7 +138,7 @@ export default function VolunteerApp() {
     try {
       const res = await fetch(`${API}/tasks`);
       const data = await res.json();
-      setTasks(data);
+      setTasks(data.tasks || data);
     } catch (e) { console.error(e); }
   }, []);
 

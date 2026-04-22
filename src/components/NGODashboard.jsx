@@ -88,7 +88,7 @@ function MatchModal({ task, onClose, onAssigned }) {
                   <div style={{width:36,height:36,borderRadius:"50%",background:"linear-gradient(135deg,#38bdf8,#818cf8)",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:700,fontSize:13}}>{initials}</div>
                   <div>
                     <div style={{color:"#f1f5f9",fontWeight:600,fontSize:14}}>{m?.volunteer?.name} {i===0&&<span style={{color:"#fbbf24",fontSize:12}}>⭐ TOP</span>}</div>
-                    <div style={{color:"#64748b",fontSize:12,fontFamily:"monospace"}}>{m.reason_text||`${m?.distance?.toFixed(1)} km away`}</div>
+                    <div style={{color:"#64748b",fontSize:12,fontFamily:"monospace"}}>{m.reason_text||`${m?.distanceKm?.toFixed(1)} km away`}</div>
                   </div>
                 </div>
                 <div style={{textAlign:"right"}}>
