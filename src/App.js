@@ -348,8 +348,8 @@ function VolunteerRegister({ onBack, onSuccess }) {
   const handleSubmit = async () => {
     const e = validate(); if (Object.keys(e).length > 0) { setErrors(e); return; }
     setSubmitting(true);
-    try { await fetch(`${API}/volunteers`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: form.name.trim(), age: parseInt(form.age), phone: form.phone, skills: form.skills, location: { lat: 12.9716, lng: 77.5946 }, available: form.available, approved: false }) }); }
-    catch { }
+    try { await fetch(`${API}/volunteers`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: form.name.trim(), age: parseInt(form.age), phone: form.phone, skills: form.skills, sector: form.skills[0], location: { lat: 12.9716, lng: 77.5946 }, available: form.available, approved: false }) }); }
+    catch(err) { console.error("Registration error:", err); alert("Registration failed: " + err.message); }
     setSubmitting(false); setDone(true);
   };
 
