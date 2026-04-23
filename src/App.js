@@ -676,7 +676,7 @@ function NGOMain({ leader, onLogout }) {
             {matchLoading ? <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: 28, color: "#9E9E9E" }}><div style={{ width: 16, height: 16, border: "2px solid #E53935", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />Scoring volunteers...</div> :
               matches.length === 0 ? <div style={{ textAlign: "center", color: "#BDBDBD", padding: 28, fontSize: 13 }}>No matching volunteers available</div> :
               matches.map((m, i) => {
-                const pct = Math.min(100, Math.round(m.score ?? 0));
+                const maxScore = Math.max(...matches.map(x => x.score ?? 0), 1); const pct = Math.round(((m.score ?? 0) / maxScore) * 95);
                 return <div key={m.volunteer?._id || i} style={{ background: "#F8F9FA", borderRadius: 11, padding: "13px 15px", marginBottom: 10, border: "1.5px solid #F0F0F0" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
