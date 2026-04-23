@@ -517,7 +517,7 @@ function NGODashboard({ onBack }) {
     }, 800);
   };
 
-  if (leader) return <NGOMain leader={leader} onLogout={() => setLeader(null)} />;
+  if (leader) return <NGOMain leader={leader} onLogout={() => setLeader(null)} onBack={onBack} />;
 
   return (
     <div style={{ minHeight: "100vh", background: "linear-gradient(160deg,#fff 60%,#FFEBEE 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
@@ -545,7 +545,7 @@ function NGODashboard({ onBack }) {
   );
 }
 
-function NGOMain({ leader, onLogout }) {
+function NGOMain({ leader, onLogout, onBack }) {
   const [tasks, setTasks] = useState([]); const [volunteers, setVolunteers] = useState([]); const [pending, setPending] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null); const [matches, setMatches] = useState([]); const [matchLoading, setMatchLoading] = useState(false);
   const [assigning, setAssigning] = useState(false); const [toast, setToast] = useState(null); const [lastRefresh, setLastRefresh] = useState(null);
@@ -591,7 +591,7 @@ function NGOMain({ leader, onLogout }) {
           {[{ l: "Open", v: open, c: "#E53935" }, { l: "Assigned", v: assigned, c: "#FF9800" }, { l: "Done", v: done, c: "#4CAF50" }].map(s => <div key={s.l} style={{ textAlign: "center" }}><div style={{ fontSize: 18, fontWeight: 800, color: s.c }}>{s.v}</div><div style={{ fontSize: 9, color: "#9E9E9E", fontWeight: 600 }}>{s.l}</div></div>)}
           <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11, color: "#9E9E9E" }}><div style={{ width: 7, height: 7, borderRadius: "50%", background: "#4CAF50", animation: "pulse 2s infinite" }} />Live · {lastRefresh?.toLocaleTimeString() || "—"}</div>
           {pending.length > 0 && <button onClick={() => setActiveTab("pending")} style={{ background: "#FFEBEE", border: "none", borderRadius: 8, padding: "6px 12px", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6 }}><div style={{ width: 17, height: 17, borderRadius: "50%", background: "#E53935", color: "#fff", fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{pending.length}</div><span style={{ fontSize: 11, fontWeight: 600, color: "#E53935" }}>Pending</span></button>}
-          <button onClick={onLogout} style={{ background: "#F8F9FA", border: "1px solid #F0F0F0", borderRadius: 8, padding: "7px 13px", fontSize: 11, fontWeight: 600, color: "#666", cursor: "pointer", fontFamily: "inherit" }}>Sign Out</button>
+          <button onClick={onBack} style={{ background: "none", border: "none", fontSize: 12, color: "#9E9E9E", cursor: "pointer", fontFamily: "inherit", marginRight: 8 }}>← Home</button><button onClick={onLogout} style={{ background: "#F8F9FA", border: "1px solid #F0F0F0", borderRadius: 8, padding: "7px 13px", fontSize: 11, fontWeight: 600, color: "#666", cursor: "pointer", fontFamily: "inherit" }}>Sign Out</button>
         </div>
       </header>
 
