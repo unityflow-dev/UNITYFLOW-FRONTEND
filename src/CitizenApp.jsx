@@ -27,7 +27,7 @@ export default function CitizenApp({ onBack }) {
   const [ticketId, setTicketId] = useState('');
   const [sosActive, setSosActive] = useState(false);
 
-  const useGPS = () => {
+  const getGPS = () => {
     setLocStatus('loading');
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -54,7 +54,7 @@ export default function CitizenApp({ onBack }) {
       setSector('Healthcare');
       setDesc('EMERGENCY — SOS triggered from citizen app. Immediate assistance required.');
       setUrgency(5);
-      useGPS();
+      getGPS();
       setTimeout(() => handleSubmit(true), 1200);
     }, 800);
   };
@@ -94,7 +94,7 @@ export default function CitizenApp({ onBack }) {
 
   return (
     <div style={{ maxWidth: 430, margin: '0 auto', minHeight: '100vh', background: '#fff', position: 'relative', overflow: 'hidden' }}>
-      {screen === 'home' && <HomeScreen onBack={onBack} onSOS={handleSOS} sosActive={sosActive} onReport={() => { useGPS(); setScreen('form'); }} />}
+      {screen === 'home' && <HomeScreen onBack={onBack} onSOS={handleSOS} sosActive={sosActive} onReport={() => { getGPS(); setScreen('form'); }} />}
       {screen === 'form' && (
         <FormScreen
           onBack={() => setScreen('home')}
@@ -102,7 +102,7 @@ export default function CitizenApp({ onBack }) {
           urgency={urgency} setUrgency={setUrgency}
           desc={desc} setDesc={setDesc}
           name={name} setName={setName}
-          locStatus={locStatus} locText={locText} useGPS={useGPS}
+          locStatus={locStatus} locText={locText} getGPS={getGPS}
           submitting={submitting} onSubmit={() => handleSubmit(false)}
         />
       )}
@@ -191,7 +191,7 @@ function HomeScreen({ onBack, onSOS, sosActive, onReport }) {
 }
 
 // ─── FORM SCREEN ─────────────────────────────────────────────────────────────
-function FormScreen({ onBack, sector, setSector, urgency, setUrgency, desc, setDesc, name, setName, locStatus, locText, useGPS, submitting, onSubmit }) {
+function FormScreen({ onBack, sector, setSector, urgency, setUrgency, desc, setDesc, name, setName, locStatus, locText, getGPS, submitting, onSubmit }) {
   const urgColors = ['', '#4CAF50', '#8BC34A', '#FF9800', '#FF5722', '#E53935'];
 
   return (
@@ -224,7 +224,7 @@ function FormScreen({ onBack, sector, setSector, urgency, setUrgency, desc, setD
 
         {/* LOCATION */}
         <SectionLabel>Location</SectionLabel>
-        <button onClick={useGPS} style={{ width: '100%', background: '#fff', border: '1.5px solid #f0f0f0', borderRadius: 14, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20, textAlign: 'left' }}>
+        <button onClick={getGPS} style={{ width: '100%', background: '#fff', border: '1.5px solid #f0f0f0', borderRadius: 14, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20, textAlign: 'left' }}>
           <div style={{ width: 38, height: 38, borderRadius: '50%', background: locStatus === 'done' ? '#E8F5E9' : '#FFEBEE', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
             {locStatus === 'done' ? '✅' : locStatus === 'loading' ? '⏳' : '📍'}
           </div>
