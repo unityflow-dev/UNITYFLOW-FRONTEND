@@ -421,7 +421,7 @@ function VolunteerMainApp({ volunteer, onLogout }) {
   const fetchTasks = useCallback(async () => { try { const res = await fetch(`${API}/tasks`); const data = await res.json(); setTasks(Array.isArray(data) ? data : data.tasks ?? []); } catch {} }, []);
   useEffect(() => { fetchTasks(); const id = setInterval(fetchTasks, 10000); return () => clearInterval(id); }, [fetchTasks]);
 
-  const incoming = tasks.filter(t => t.status === "open" && t.sector === volunteer.skills || t.sector === volunteer.sector);
+  const incoming = tasks.filter(t => t.status === "open" && t.sector === volunteer.skills || t.sector === (volunteer.sector));
   const active = tasks.filter(t => t.status === "assigned" && t.assignedVolunteer === volunteer._id);
   const history = tasks.filter(t => t.status === "completed" && t.assignedVolunteer === volunteer._id);
 
