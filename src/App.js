@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
-const API = "http://localhost:5000/api";
+const API = "https://unityflow-backend-71bj.onrender.com/api";
 const SECTORS = ["Flood Relief", "Healthcare", "Food and Hunger", "Education", "Women Safety"];
 const SECTOR_ICONS = { "Flood Relief": "🌊", Healthcare: "🏥", "Food and Hunger": "🍱", Education: "📚", "Women Safety": "🛡️" };
 const URGENCY_LABELS = ["", "Minimal", "Low", "Medium", "High", "Critical"];
