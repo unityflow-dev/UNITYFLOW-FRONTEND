@@ -558,7 +558,7 @@ function NGOMain({ leader, onLogout }) {
   }, []);
 
   const fetchTasks = useCallback(async () => { try { const res = await fetch(`${API}/tasks?sector=${encodeURIComponent(leader.sector)}`); const data = await res.json(); setTasks(Array.isArray(data) ? data : data.tasks ?? []); setLastRefresh(new Date()); } catch {} }, [leader.sector]);
-  const fetchVolunteers = useCallback(async () => { try { const res = await fetch(`${API}/volunteers?sector=${encodeURIComponent(leader.sector)}`); const data = await res.json(); const list = Array.isArray(data) ? data : []; setVolunteers(list.filter(v => v.approved)); setPending(list.filter(v => !v.approved && !v.rejected)); } catch {} }, [leader.sector]);
+  const fetchVolunteers = useCallback(async () => { try { const res = await fetch(`${API}/volunteers?sector=${encodeURIComponent(leader.sector)}`); const data = await res.json(); const list = Array.isArray(data) ? data : (data.volunteers ?? data.data ?? []); setVolunteers(list.filter(v => v.approved)); setPending(list.filter(v => !v.approved && !v.rejected)); } catch {} }, [leader.sector]);
   useEffect(() => { fetchTasks(); fetchVolunteers(); const id = setInterval(() => { fetchTasks(); fetchVolunteers(); }, 10000); return () => clearInterval(id); }, [fetchTasks, fetchVolunteers]);
 
   const handleTaskClick = useCallback(async task => {
@@ -639,7 +639,7 @@ function NGOMain({ leader, onLogout }) {
                     <div style={{ flex: 1 }}><p style={{ fontSize: 13, fontWeight: 700, color: "#1A1A2E", margin: 0 }}>{v.name}</p><p style={{ fontSize: 11, color: "#9E9E9E", margin: "2px 0 0" }}>Age {v.age} · {v.phone}</p></div>
                     <div style={{ fontSize: 10, padding: "3px 9px", borderRadius: 10, background: v.available ? "#E8F5E9" : "#F5F5F5", color: v.available ? "#2E7D32" : "#9E9E9E", fontWeight: 600 }}>{v.available ? "● Available" : "○ Offline"}</div>
                   </div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>{(v.skills || []).map(s => <span key={s} style={{ fontSize: 10, padding: "3px 8px", borderRadius: 7, background: "#FFEBEE", color: "#E53935", fontWeight: 600 }}>{s}</span>)}</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>{(Array.isArray(v.skills) ? v.skills : [v.skills]).map(s => <span key={s} style={{ fontSize: 10, padding: "3px 8px", borderRadius: 7, background: "#FFEBEE", color: "#E53935", fontWeight: 600 }}>{s}</span>)}</div>
                 </div>)}
               </div>}
           </div>
@@ -654,7 +654,7 @@ function NGOMain({ leader, onLogout }) {
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {pending.map(v => <div key={v._id} style={{ background: "#fff", borderRadius: 15, padding: "16px 18px", border: "1.5px solid #FFCDD2", display: "flex", alignItems: "center", gap: 14 }}>
                   <div style={{ width: 44, height: 44, borderRadius: "50%", background: "linear-gradient(135deg,#E53935,#B71C1C)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 16, flexShrink: 0 }}>{(v.name || "V")[0].toUpperCase()}</div>
-                  <div style={{ flex: 1 }}><p style={{ fontSize: 14, fontWeight: 700, color: "#1A1A2E", margin: 0 }}>{v.name}</p><p style={{ fontSize: 12, color: "#9E9E9E", margin: "3px 0 0" }}>Age {v.age} · {(v.skills || []).join(", ")} · {v.phone}</p></div>
+                  <div style={{ flex: 1 }}><p style={{ fontSize: 14, fontWeight: 700, color: "#1A1A2E", margin: 0 }}>{v.name}</p><p style={{ fontSize: 12, color: "#9E9E9E", margin: "3px 0 0" }}>Age {v.age} · {(Array.isArray(v.skills) ? v.skills : [v.skills]).join(", ")} · {v.phone}</p></div>
                   <div style={{ display: "flex", gap: 8 }}>
                     <button onClick={() => handleApprove(v._id)} style={{ background: "#E8F5E9", border: "1px solid #A5D6A7", borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 700, color: "#2E7D32", cursor: "pointer", fontFamily: "inherit" }}>Approve</button>
                     <button onClick={() => handleReject(v._id)} style={{ background: "#FFEBEE", border: "1px solid #FFCDD2", borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 700, color: "#E53935", cursor: "pointer", fontFamily: "inherit" }}>Reject</button>

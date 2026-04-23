@@ -121,7 +121,7 @@ function TaskCard({ task, onAccept, onDecline, onComplete, mode }) {
   );
 }
 
-export default function VolunteerApp() {
+export default function VolunteerApp({ onBack }) {
   const [volunteers, setVolunteers] = useState([]);
   const [selectedVolunteer, setSelectedVolunteer] = useState(null);
   const [tasks, setTasks] = useState([]);
@@ -217,13 +217,8 @@ export default function VolunteerApp() {
     } catch { showToast("❌ Network error"); }
   };
 
-  const TABS = [
-    { key: "incoming", label: "INCOMING", count: incomingTasks.length, color: "#ef4444" },
-    { key: "active",   label: "ACTIVE",   count: activeTasks.length,   color: "#f59e0b" },
-    { key: "history",  label: "HISTORY",  count: historyTasks.length,  color: "#22c55e" },
-  ];
-
-  const currentTasks = {
+  const TABS = [{ key: "incoming", label: "INCOMING", color: "#38bdf8", count: incomingTasks.length },{ key: "active", label: "ACTIVE", color: "#f59e0b", count: activeTasks.length },{ key: "history", label: "HISTORY", color: "#22c55e", count: historyTasks.length }];
+const currentTasks = {
     incoming: incomingTasks,
     active: activeTasks,
     history: historyTasks,
