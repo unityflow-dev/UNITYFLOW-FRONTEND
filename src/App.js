@@ -495,7 +495,7 @@ function LeafletMap({ tasks, selectedTask, onTaskClick }) {
     Object.keys(markersRef.current).forEach(id => { if (!tasks.find(t => t._id === id)) { markersRef.current[id].remove(); delete markersRef.current[id]; } });
     tasks.forEach(task => {
       const color = STATUS_COLORS[task.status] || "#E53935"; const isSel = selectedTask?._id === task._id;
-      const icon = L.divIcon({ className: "", html: `<div style="width:${isSel ? 20 : 14}px;height:${isSel ? 20 : 14}px;border-radius:50%;background:${color};border:${isSel ? "3px solid #B71C1C" : "2px solid white"};box-shadow:0 2px 8px rgba(0,0,0,0.3);cursor:pointer;"></div>`, iconSize: [isSel ? 20 : 14, isSel ? 20 : 14], iconAnchor: [isSel ? 10 : 7, isSel ? 10 : 7] });
+      const icon = L.divIcon({ className: "", html: `<div style="position:relative;width:${isSel ? 20 : 14}px;height:${isSel ? 20 : 14}px;border-radius:50%;background:${color};border:${isSel ? "3px solid #B71C1C" : "2px solid white"};box-shadow:0 2px 8px rgba(0,0,0,0.3);cursor:pointer;color-scheme:normal;"></div>`, iconSize: [isSel ? 20 : 14, isSel ? 20 : 14], iconAnchor: [isSel ? 10 : 7, isSel ? 10 : 7] });
       const lat = task.location?.lat ?? 12.9716; const lng = task.location?.lng ?? 77.5946;
       if (markersRef.current[task._id]) { markersRef.current[task._id].setIcon(icon); markersRef.current[task._id].setLatLng([lat, lng]); }
       else { const m = L.marker([lat, lng], { icon }).addTo(leafletMap.current).bindPopup(`<b>${task.sector}</b><br/>Urgency: ${task.urgency}/5<br/>Status: ${task.status}`).on("click", () => onTaskClick(task)); markersRef.current[task._id] = m; }
